@@ -5,6 +5,7 @@ on:
   repository_dispatch:
 jobs:
   caddy:
+    if: 1 == 0
     runs-on: ubuntu-latest
     strategy:
       matrix:
