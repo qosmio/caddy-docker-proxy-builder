@@ -140,10 +140,11 @@ jobs:
           # default fail
           if_no_artifact_found: fail
 
-      - name: Test if an update is needed
+      - name: Set version
+        id: version
         run: |
           chmod 700 ./artifacts/binaries/linux/amd64/caddy
-          ./artifacts/binaries/linux/amd64/caddy list-modules --packages --versions | tee ./list-modules.txt
+          echo "::set-output name=version::$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)"
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
@@ -177,7 +178,7 @@ jobs:
           file: Dockerfile-alpine
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: qosmio/caddy-docker-proxy:latest
+          tags: qosmio/caddy-docker-proxy:latest, qosmio/caddy-docker-proxy:${{ steps.version.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           # tags: ghcr.io/${{github.repository}}:latest
           # tags: .io/${{github.repository}}:latest
