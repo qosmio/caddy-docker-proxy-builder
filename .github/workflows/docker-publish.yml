@@ -26,11 +26,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const data = await github.rest.repos.getLatestRelease({
+            return github.rest.repos.getLatestRelease({
               owner: 'caddyserver',
               repo: 'caddy',
+            }).then(result => {
+                return result.data.name
             })
-            console.log(data)
           result-encoding: string
 
       - name: Print result
