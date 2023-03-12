@@ -71,7 +71,7 @@ jobs:
           path: artifacts
 
   docker:
-    # needs: caddy
+    needs: caddy
     runs-on: ubuntu-latest
     permissions:
       contents: read
