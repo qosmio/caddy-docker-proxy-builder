@@ -87,7 +87,7 @@ jobs:
 
       - name: Test if an update is needed
         run: |
-          chmod 700 ./artifacts/binaries/linux/caddy
+          chmod 700 ./artifacts/binaries/linux/amd64/caddy
           ./artifacts/binaries/linux/amd64/caddy list-modules -packages -versions > ./list-modules.txt
           ! git diff --exit-code list-modules.txt
 
