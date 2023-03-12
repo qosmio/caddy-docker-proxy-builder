@@ -56,7 +56,7 @@ jobs:
           GOARM: ${{matrix.variant}}
         run: |-
           mkdir -p ./artifacts/binaries/${{matrix.platform}}
-          xcaddy build ${env.version} \
+          xcaddy build ${{steps.caddy-version.outputs.result}} \
             --output ./artifacts/binaries/${{matrix.platform}}/caddy \
             --with github.com/caddy-dns/cloudflare \
             --with github.com/kirsch33/realip \
