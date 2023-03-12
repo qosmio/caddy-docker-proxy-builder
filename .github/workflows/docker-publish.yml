@@ -177,15 +177,11 @@ jobs:
           file: Dockerfile-alpine
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: qosmio/caddy-docker-proxy:latest
           labels: ${{ steps.meta.outputs.labels }}
           # tags: ghcr.io/${{github.repository}}:latest
           # tags: .io/${{github.repository}}:latest
 
-      - name: Sign the published Docker image
-        env:
-          COSIGN_EXPERIMENTAL: "true"
-        run: cosign sign ghcr.io/${{github.repository}}:latest
 # - name: Push repository
 #   uses: stefanzweifel/git-auto-commit-action@v4
 #   with:
