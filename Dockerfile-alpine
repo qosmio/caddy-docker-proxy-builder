@@ -10,7 +10,7 @@ RUN apk add -U --no-cache ca-certificates busybox-extras curl ; \
     /root/.cache \
     /tmp/*
 
-COPY artifacts/binaries/$TARGETPLATFORM/caddy /bin/
+COPY binaries/$TARGETPLATFORM/caddy /bin/
 
 ENTRYPOINT ["/bin/caddy"]
 
