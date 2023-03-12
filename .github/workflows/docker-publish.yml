@@ -3,8 +3,6 @@ name: Build and push docker images
 on:
   workflow_dispatch:
   repository_dispatch:
-env:
-  version: ${{ steps.get_latest_release.outputs.tag_name }}
 jobs:
   caddy:
     runs-on: ubuntu-latest
@@ -24,7 +22,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get latest release version
-        id: get_latest_release
+        id: caddy-version
         uses: actions/github-script@v6
         with:
           script: |
@@ -32,7 +30,10 @@ jobs:
               owner: 'caddyserver',
               repo: 'caddy'
             })
-            console.log(data.tag_name)
+          result-encoding: string
+
+      - name: Print result
+        run: echo "${{steps.caddy-version.outputs.result}}"
 
       - name: Set up Golang environment
         uses: actions/setup-go@v4
@@ -41,12 +42,6 @@ jobs:
 
       - name: Check Go version
         run: go version
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
       - name: Set up xcaddy
         run: |-
@@ -120,10 +115,9 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: cosign sign ghcr.io/${{github.repository}}:latest
-
-      # - name: Push repository
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: Automatic build
-      #     branch: master
-      #     file_pattern: list-modules.txt
+# - name: Push repository
+#   uses: stefanzweifel/git-auto-commit-action@v4
+#   with:
+#     commit_message: Automatic build
+#     branch: master
+#     file_pattern: list-modules.txt
