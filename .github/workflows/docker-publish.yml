@@ -4,71 +4,70 @@ on:
   workflow_dispatch:
   repository_dispatch:
 jobs:
-  caddy:
-    if: 1 == 0
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - platform: linux/amd64
-            os: linux
-            arch: amd64
-            variant: ""
-          - platform: linux/arm64
-            os: linux
-            arch: arm64
-            variant: ""
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Get latest release version
-        id: caddy-version
-        uses: actions/github-script@v6
-        with:
-          script: |
-            return github.rest.repos.getLatestRelease({
-              owner: 'caddyserver',
-              repo: 'caddy',
-            }).then(result => {
-                return result.data.name
-            })
-          result-encoding: string
-
-      - name: Print result
-        run: echo "${{steps.caddy-version.outputs.result}}"
-
-      - name: Set up Golang environment
-        uses: actions/setup-go@v3
-        with:
-          go-version: ^1.20
-
-      - name: Check Go version
-        run: go version
-
-      - name: Set up xcaddy
-        run: |-
-          go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
-
-      - name: Build caddy
-        env:
-          GOOS: ${{matrix.os}}
-          GOARCH: ${{matrix.arch}}
-          GOARM: ${{matrix.variant}}
-        run: |-
-          mkdir -p ./artifacts/binaries/${{matrix.platform}}
-          xcaddy build ${{steps.caddy-version.outputs.result}} \
-            --output ./artifacts/binaries/${{matrix.platform}}/caddy \
-            --with github.com/caddy-dns/cloudflare \
-            --with github.com/kirsch33/realip \
-            --with github.com/lucaslorentz/caddy-docker-proxy/v2@latest \
-            --with github.com/caddyserver/caddy/v2@latest
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: artifacts
+  # caddy:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - platform: linux/amd64
+  #           os: linux
+  #           arch: amd64
+  #           variant: ""
+  #         - platform: linux/arm64
+  #           os: linux
+  #           arch: arm64
+  #           variant: ""
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #
+  #     - name: Get latest release version
+  #       id: caddy-version
+  #       uses: actions/github-script@v6
+  #       with:
+  #         script: |
+  #           return github.rest.repos.getLatestRelease({
+  #             owner: 'caddyserver',
+  #             repo: 'caddy',
+  #           }).then(result => {
+  #               return result.data.name
+  #           })
+  #         result-encoding: string
+  #
+  #     - name: Print result
+  #       run: echo "${{steps.caddy-version.outputs.result}}"
+  #
+  #     - name: Set up Golang environment
+  #       uses: actions/setup-go@v3
+  #       with:
+  #         go-version: ^1.20
+  #
+  #     - name: Check Go version
+  #       run: go version
+  #
+  #     - name: Set up xcaddy
+  #       run: |-
+  #         go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+  #
+  #     - name: Build caddy
+  #       env:
+  #         GOOS: ${{matrix.os}}
+  #         GOARCH: ${{matrix.arch}}
+  #         GOARM: ${{matrix.variant}}
+  #       run: |-
+  #         mkdir -p ./artifacts/binaries/${{matrix.platform}}
+  #         xcaddy build ${{steps.caddy-version.outputs.result}} \
+  #           --output ./artifacts/binaries/${{matrix.platform}}/caddy \
+  #           --with github.com/caddy-dns/cloudflare \
+  #           --with github.com/kirsch33/realip \
+  #           --with github.com/lucaslorentz/caddy-docker-proxy/v2@latest \
+  #           --with github.com/caddyserver/caddy/v2@latest
+  #
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: artifacts
+  #         path: artifacts
 
   docker:
     needs: caddy
