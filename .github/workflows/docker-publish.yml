@@ -143,7 +143,7 @@ jobs:
       - name: Set version
         id: version
         run: |
-          chmod 700 ./artifacts/binaries/linux/amd64/caddy
+          chmod 700 ./artifacts/binaries/linux/{amd64,arm64}/caddy
           echo "::set-output name=version::$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)"
 
       - name: Setup QEMU
