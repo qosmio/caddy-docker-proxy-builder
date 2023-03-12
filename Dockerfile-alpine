@@ -1,0 +1,15 @@
+#FROM ghcr.io/linuxserver/baseimage-alpine:edge as alpine
+FROM alpine:latest as alpine
+ARG TARGETPLATFORM
+
+EXPOSE 80 443 2019
+ENV XDG_CONFIG_HOME /config
+ENV XDG_DATA_HOME /data
+
+RUN apk add -U --no-cache ca-certificates busybox-extras curl
+
+COPY artifacts/binaries/$TARGETPLATFORM/caddy /bin/
+
+ENTRYPOINT ["/bin/caddy"]
+
+CMD ["docker-proxy"]
