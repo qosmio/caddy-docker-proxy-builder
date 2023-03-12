@@ -123,7 +123,7 @@ jobs:
           # https://github.com/actions/download-artifact#download-all-artifacts
           name: artifacts
           # Optional, a directory where to extract artifact(s), defaults to the current directory
-          path: artifacts
+          #path: artifacts
           # Optional, defaults to current repo
           repo: ${{ github.repository }}
           # Optional, check the workflow run to whether it has an artifact
@@ -146,8 +146,8 @@ jobs:
         id: version
         run: |
           find .
-          chmod 700 ./artifacts/binaries/linux/{amd64,arm64}/caddy
-          echo "::set-output name=version::$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)"
+          chmod 700 ./binaries/linux/{amd64,arm64}/caddy
+          echo "::set-output name=version::$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)"
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
