@@ -22,19 +22,33 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Get latest release version
+        id: caddy-version
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data } = await github.repos.getLatestRelease({
+              owner: 'caddyserver',
+              repo: 'caddy'
+            })
+          result-encoding: string
+
+      - name: Print result
+        run: echo "${{steps.caddy-version.outputs.result}}"
+
       - name: Set up Golang environment
         uses: actions/setup-go@v4
         with:
           go-version: ^1.20
+
       - name: Check Go version
         run: go version
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+
       - name: Set up xcaddy
         run: |-
           go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+
       - name: Build caddy
         env:
           GOOS: ${{matrix.os}}
@@ -48,6 +62,7 @@ jobs:
             --with github.com/kirsch33/realip \
             --with github.com/lucaslorentz/caddy-docker-proxy/v2@latest \
             --with github.com/caddyserver/caddy/v2@latest
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -63,36 +78,32 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Get latest release version
-        id: get_latest_release
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data } = await github.repos.getLatestRelease({
-              owner: 'caddyserver',
-              repo: 'caddy'
-            })
-            console.log(data.tag_name)
+
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: artifacts
           path: ./artifacts
+
       - name: Test if an update is needed
         run: |
           chmod 700 ./artifacts/binaries/linux/caddy
           ./artifacts/binaries/linux/amd64/caddy list-modules -packages -versions > ./list-modules.txt
           ! git diff --exit-code list-modules.txt
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
+
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v2
+
       - name: Log into registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
+
       - name: Build and push docker image (linux)
         uses: docker/build-push-action@v4
         with:
@@ -101,6 +112,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{github.repository}}:latest
+
       - name: Sign the published Docker image
         env:
           COSIGN_EXPERIMENTAL: "true"
