@@ -142,10 +142,8 @@ jobs:
 
       - name: Test if an update is needed
         run: |
-          find .
           chmod 700 ./artifacts/binaries/linux/amd64/caddy
-          ./artifacts/binaries/linux/amd64/caddy list-modules -packages -versions > ./list-modules.txt
-          ! git diff --exit-code list-modules.txt
+          ./artifacts/binaries/linux/amd64/caddy list-modules --packages --versions | tee ./list-modules.txt
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
