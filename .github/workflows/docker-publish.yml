@@ -27,8 +27,8 @@ jobs:
         with:
           script: |
             const data = await github.rest.repos.getLatestRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo
+              owner: 'caddyserver',
+              repo: 'caddy',
             })
             console.log(data)
           result-encoding: string
