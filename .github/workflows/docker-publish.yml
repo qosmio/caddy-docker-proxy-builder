@@ -5,6 +5,7 @@ on:
   repository_dispatch:
 jobs:
   caddy:
+    if: 1 == 0
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -70,7 +71,7 @@ jobs:
           path: artifacts
 
   docker:
-    needs: caddy
+    # needs: caddy
     runs-on: ubuntu-latest
     permissions:
       contents: read
