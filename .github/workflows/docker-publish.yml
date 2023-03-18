@@ -1,8 +1,10 @@
 ---
 name: Build and push docker images
+
 on:
   workflow_dispatch:
   repository_dispatch:
+    
 jobs:
   caddy:
     # if: 1 == 0
@@ -147,7 +149,7 @@ jobs:
         run: |
           find .
           chmod 700 ./binaries/linux/{amd64,arm64}/caddy
-          echo "::set-output name=version::$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)"
+          echo "{name}=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
