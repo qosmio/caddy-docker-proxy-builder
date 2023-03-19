@@ -8,6 +8,8 @@ on:
 jobs:
   caddy:
     # if: 1 == 0
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -66,6 +68,11 @@ jobs:
             --with github.com/lucaslorentz/caddy-docker-proxy/v2@latest \
             --with github.com/caddyserver/caddy/v2@latest
 
+      - name: Set version
+        id: version
+        run: |
+          echo "{name}=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
       - name: Upload artifact
         uses: actions/upload-artifact@main
         with:
@@ -75,6 +82,8 @@ jobs:
   docker:
     needs: caddy
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.version.outputs.version }}
     permissions:
       contents: read
       packages: write
@@ -144,12 +153,10 @@ jobs:
           # default fail
           if_no_artifact_found: fail
 
-      - name: Set version
-        id: version
+      - name: Chmod 700
         run: |
           find .
           chmod 700 ./binaries/linux/{amd64,arm64}/caddy
-          echo "{name}=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@master
@@ -177,13 +184,13 @@ jobs:
           images: qosmio/caddy-docker-proxy
 
       - name: Build and push docker image (linux)
-        uses: docker/build-push-action@master
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: Dockerfile-alpine
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: qosmio/caddy-docker-proxy:latest, qosmio/caddy-docker-proxy:${{ steps.version.outputs.version }}
+          tags: qosmio/caddy-docker-proxy:latest, qosmio/caddy-docker-proxy:${{ needs.caddy.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           # tags: ghcr.io/${{github.repository}}:latest
           # tags: .io/${{github.repository}}:latest
