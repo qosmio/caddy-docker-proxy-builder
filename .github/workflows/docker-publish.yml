@@ -71,7 +71,7 @@ jobs:
       - name: Set version
         id: version
         run: |
-          echo "{name}=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "{name}=$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@main
