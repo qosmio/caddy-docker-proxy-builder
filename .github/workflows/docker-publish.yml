@@ -7,7 +7,7 @@ on:
 
 jobs:
   caddy:
-    if: 1 == 0
+    # if: 1 == 0
     outputs:
       version: ${{ steps.version.outputs.version }}
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
           result-encoding: string
 
       - name: Print result
-        run: echo "${{steps.caddy-version.outputs.result}}"
+        run: echo "Branch version: ${{steps.caddy-version.outputs.result}}"
 
       - name: Set up Golang environment
         uses: actions/setup-go@v3
@@ -72,7 +72,7 @@ jobs:
         id: version
         run: |
           chmod 700 ./artifacts/binaries/linux/{amd64,arm64}/caddy
-          echo "{name}=$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "version=$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@main
@@ -81,7 +81,7 @@ jobs:
           path: artifacts
 
   docker:
-    # needs: caddy
+    needs: caddy
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -94,13 +94,13 @@ jobs:
         uses: actions/checkout@main
 
       - name: Download artifact
-        if: 1 == 0
+        # if: 1 == 0
         uses: actions/download-artifact@v3
         with:
           name: artifacts
 
       - name: Download artifact
-        # if: 1 == 0
+        if: 1 == 0
         id: download-artifact
         uses: dawidd6/action-download-artifact@master
         with:
@@ -191,5 +191,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: qosmio/caddy-docker-proxy:latest, qosmio/caddy-docker-proxy:${{ steps.version.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
-          # tags: ghcr.io/${{github.repository}}:latest
-          # tags: .io/${{github.repository}}:latest
