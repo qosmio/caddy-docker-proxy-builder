@@ -159,7 +159,7 @@ jobs:
         id: version
         run: |
           chmod 700 ./binaries/linux/{amd64,arm64}/caddy
-          echo "{name}=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "version=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Print result
         run: echo "${{steps.version.outputs.version}}"
