@@ -69,9 +69,10 @@ jobs:
             --with github.com/caddyserver/caddy/v2@latest
 
       - name: Set version
+        if: ${{matrix.platform}} == "linux/amd64"
         id: version
         run: |
-          chmod 700 ./artifacts/binaries/linux/{amd64,arm64}/caddy
+          chmod 700 ./artifacts/binaries/linux/amd64/caddy
           echo "version=$(./artifacts/binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
