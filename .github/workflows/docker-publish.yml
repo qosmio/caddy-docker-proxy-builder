@@ -4,7 +4,7 @@ name: Build and push docker images
 on:
   workflow_dispatch:
   repository_dispatch:
-    
+
 jobs:
   caddy:
     # if: 1 == 0
@@ -22,11 +22,11 @@ jobs:
             variant: ""
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
 
       - name: Get latest release version
         id: caddy-version
-        uses: actions/github-script@v6
+        uses: actions/github-script@main
         with:
           script: |
             return github.rest.repos.getLatestRelease({
@@ -41,7 +41,7 @@ jobs:
         run: echo "${{steps.caddy-version.outputs.result}}"
 
       - name: Set up Golang environment
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@main
         with:
           go-version: ^1.20
 
@@ -67,7 +67,7 @@ jobs:
             --with github.com/caddyserver/caddy/v2@latest
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
           name: artifacts
           path: artifacts
@@ -81,17 +81,17 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: artifacts
 
       - name: Download artifact
         if: 1 == 0
         id: download-artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@master
         with:
           # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
           # Required, if the artifact is from a different repo
@@ -125,13 +125,13 @@ jobs:
           # https://github.com/actions/download-artifact#download-all-artifacts
           name: artifacts
           # Optional, a directory where to extract artifact(s), defaults to the current directory
-          #path: artifacts
+          # path: artifacts
           # Optional, defaults to current repo
           repo: ${{ github.repository }}
           # Optional, check the workflow run to whether it has an artifact
           # then will get the last available artifact from the previous workflow
           # default false, just try to download from the last one
-          check_artifacts:  false
+          check_artifacts: false
           # Optional, search for the last workflow run whose stored an artifact named as in `name` input
           # default false
           search_artifacts: false
@@ -152,32 +152,32 @@ jobs:
           echo "{name}=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@master
 
       - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@master
 
       # - name: Log into GitHub registry
-      #   uses: docker/login-action@v2
+      #   uses: docker/login-action@master
       #   with:
       #     registry: ghcr.io
       #     username: ${{github.actor}}
       #     password: ${{secrets.GITHUB_TOKEN}}
 
       - name: Log into Docker registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@master
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v2
+        uses: docker/metadata-action@master
         with:
           images: qosmio/caddy-docker-proxy
 
       - name: Build and push docker image (linux)
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@master
         with:
           context: .
           file: Dockerfile-alpine
