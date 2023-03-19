@@ -40,7 +40,7 @@ jobs:
           result-encoding: string
 
       - name: Print result
-        run: echo "Branch version: ${{steps.caddy-version.outputs.result}}"
+        run: echo "Branch ${{steps.caddy-version.outputs.result}}"
 
       - name: Set up Golang environment
         uses: actions/setup-go@v3
