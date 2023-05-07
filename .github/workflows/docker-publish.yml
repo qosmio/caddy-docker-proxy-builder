@@ -61,12 +61,12 @@ jobs:
           GOARM: ${{matrix.variant}}
         run: |-
           mkdir -p ./artifacts/binaries/${{matrix.platform}}
-          xcaddy build ${{steps.caddy-version.outputs.result}} \
+          xcaddy build master ${{steps.caddy-version.outputs.result}} \
             --output ./artifacts/binaries/${{matrix.platform}}/caddy \
             --with github.com/caddy-dns/cloudflare \
             --with github.com/kirsch33/realip \
-            --with github.com/lucaslorentz/caddy-docker-proxy/v2@latest \
-            --with github.com/caddyserver/caddy/v2@latest
+            --with github.com/mholt/caddy-l4 \
+            --with github.com/lucaslorentz/caddy-docker-proxy/v2@master
 
       - name: Upload artifact
         uses: actions/upload-artifact@main
@@ -153,7 +153,7 @@ jobs:
         id: version
         run: |
           chmod 700 ./binaries/linux/{amd64,arm64}/caddy
-          echo "version=$(./binaries/linux/amd64/caddy version | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "version=$(./binaries/linux/amd64/caddy version | awk -F'[ -]' '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Print version
         run: echo "${{steps.version.outputs.version}}"
