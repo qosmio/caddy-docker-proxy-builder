@@ -62,12 +62,12 @@ jobs:
         run: |-
           mkdir -p ./artifacts/binaries/${{matrix.platform}}
           echo "Latest: ${{steps.caddy-version.outputs.result}}"
-          xcaddy build master \
+          XCADDY_SETCAP=1 xcaddy build latest \
             --output ./artifacts/binaries/${{matrix.platform}}/caddy \
             --with github.com/caddy-dns/cloudflare \
             --with github.com/kirsch33/realip \
             --with github.com/mholt/caddy-l4 \
-            --with github.com/lucaslorentz/caddy-docker-proxy/v2@master
+            --with github.com/lucaslorentz/caddy-docker-proxy/v2
 
       - name: Upload artifact
         uses: actions/upload-artifact@main
