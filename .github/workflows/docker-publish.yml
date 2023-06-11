@@ -62,9 +62,9 @@ jobs:
         run: |-
           mkdir -p ./artifacts/binaries/${{matrix.platform}}
           echo "Latest: ${{steps.caddy-version.outputs.result}}"
-          XCADDY_SETCAP=1 xcaddy build latest \
+          XCADDY_SETCAP=1 xcaddy build master \
             --output ./artifacts/binaries/${{matrix.platform}}/caddy \
-            --with github.com/caddy-dns/cloudflare \
+            --with github.com/qosmio/cloudflare@master \
             --with github.com/kirsch33/realip \
             --with github.com/mholt/caddy-l4 \
             --with github.com/lucaslorentz/caddy-docker-proxy/v2
